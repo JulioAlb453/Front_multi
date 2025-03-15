@@ -1,12 +1,21 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFireAuthModule } from '@angular/fire/compat/auth';
+import { environment } from './enviroments/enviroments';
 
-import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TemperatureSensorModule } from './sensors/temperatureSensor/temperature-sensor.module';
+
+
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, AppRoutingModule, TemperatureSensorModule],
+  imports: [
+    BrowserModule,
+    AngularFireModule.initializeApp(environment.firebaseConfig), 
+    AngularFireAuthModule,  
+    TemperatureSensorModule
+  ],
   providers: [],
   bootstrap: [AppComponent],
 })

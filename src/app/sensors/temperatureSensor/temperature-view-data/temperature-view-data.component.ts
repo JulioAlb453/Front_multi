@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-temperature-view-data',
@@ -7,5 +7,6 @@ import { Component } from '@angular/core';
   styleUrl: './temperature-view-data.component.css'
 })
 export class TemperatureViewDataComponent {
+  @Input() sensorData: any;
 
 }

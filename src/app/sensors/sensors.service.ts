@@ -1,46 +1,31 @@
 import { Injectable } from '@angular/core';
-import {
-  MqttService,
-  MQTT_SERVICE_OPTIONS,
-  IMqttMessage,
-} from 'ngx-mqtt';
-import { BrowserModule } from '@angular/platform-browser';
-import { Subject, Subscription } from 'rxjs';
-
-export const MQTT_ServiceOptions = {
-  hostname: '',
-  port: 15675,
-  protocol: 'ws',
-  path: '/ws',
-};
+import { getDatabase, ref, onValue } from 'firebase/database';
+import { environment } from '../enviroments/enviroments';
+import { initializeApp } from 'firebase/app';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SensorsService {
   private mensajes$ = new Subject<any>();
-  private susbcription: Subscription;
 
-  constructor(private mqttService: MqttService) {
-    this.mqttService.connect(MQTT_SERVICE_OPTIONS);
+  constructor() {
+    const app = initializeApp(environment.firebaseConfig);
 
-    this.susbcription = this.mqttService
-      .observe('casa/sensores')
-      .subscribe((message: IMqttMessage) => {
-        try {
-          const payload = JSON.parse(message.payload.toLocaleString());
-          this.mensajes$.next(payload);
-        } catch (error) {
-          console.error('Error parseando payload:', error);
-        }
-      });
+    const database = getDatabase(app);
+
+    const sensorAlertsRef = ref(database, 'sensor_alerts');
+
+    onValue(sensorAlertsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        this.mensajes$.next(data);
+      }
+    });
   }
 
   getMensajes() {
     return this.mensajes$.asObservable();
   }
-
-  ngOnDestroy() {
-    this.susbcription.unsubscribe();
-  } 
 }
