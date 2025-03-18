@@ -1,26 +1,28 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { SensorsService } from '../../sensors.service';
+import { sensorService } from '../../sensors.service';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-temperature-sensor-data',
   standalone: false,
   templateUrl: './temperature-sensor-data.component.html',
-  styleUrls: ['./temperature-sensor-data.component.css']
+  styleUrls: ['./temperature-sensor-data.component.css'],
 })
 export class TemperatureSensorDataComponent implements OnInit, OnDestroy {
-  private subscription: Subscription = new Subscription;
-  public sensorData: any;  // Aquí guardaremos los datos del sensor
+  private subscription: Subscription = new Subscription(); // Para manejar la suscripción
+  public sensorData: any; // Almacena los datos del sensor
+  public objectKeys = Object.keys; // Función para iterar sobre las claves de un objeto
 
-  constructor(private sensorsService: SensorsService) {}
+  constructor(private sensorsService: sensorService) {}
 
   ngOnInit() {
     // Nos suscribimos al observable del servicio
-    this.subscription = this.sensorsService.getMensajes().subscribe(
-      (data) => {
-        this.sensorData = data;  // Actualizamos los datos cuando hay un cambio
+    this.subscription = this.sensorsService.listenForPushNotifications().subscribe(
+      (data: any) => {
+        console.log('Datos recibidos en el componente:', data); // Depuración
+        this.sensorData = data; // Actualizamos los datos cuando hay un cambio
       },
-      (error) => {
+      (error: any) => {
         console.error('Error al obtener los datos del sensor:', error);
       }
     );
